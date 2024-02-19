@@ -1,0 +1,6 @@
+discord
+python-dotenv
+pyautogui
+sounddevice
+numpy
+scipy
