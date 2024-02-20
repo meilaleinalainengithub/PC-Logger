@@ -11,11 +11,9 @@ async def sendMic():
         microphone.record()
         count += 1
         if count >= determine:
-            runMic = True
-            os.environ['runMic'] = runMic
-            os.environ['mïcCount'] = count
+            microphone.update_env('runMic', "True")
 
-            mic_path = f"files\\{count}.wav"       
+            mic_path = f"files\\{time.strftime('%H:%M:%S')}.wav"       
             os.remove(mic_path) # COMMENT OUT IF YOU WANT TO KEEP IT
             determine += 1
         time.sleep(3)

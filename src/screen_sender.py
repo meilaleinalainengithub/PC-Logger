@@ -11,11 +11,9 @@ async def sendScreen():
         screenshot.printscreen()
         count += 1
         if count >= determine:
-            runScreen = True
-            os.environ['runScreen'] = runScreen
-            os.environ['screenCount'] = count
+            screenshot.update_env('runMic', "True")
 
-            screenshot_path = f"files\\{count}.png"       
+            screenshot_path = f"files\\{time.strftime('%H:%M:%S')}.png"       
             os.remove(screenshot_path) # COMMENT OUT IF YOU WANT TO KEEP IT
             determine += 1
         time.sleep(3)
