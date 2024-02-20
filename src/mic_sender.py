@@ -1,6 +1,7 @@
 from screen import Microphone
 import time
 import os
+import pyautogui
 
 microphone = Microphone()
 
@@ -13,7 +14,7 @@ async def sendMic():
         if count >= determine:
             microphone.update_env('runMic', "True")
 
-            mic_path = f"files\\{time.strftime('%H:%M:%S')}.wav"       
+            mic_path = microphone.name   
             os.remove(mic_path) # COMMENT OUT IF YOU WANT TO KEEP IT
             determine += 1
         time.sleep(3)

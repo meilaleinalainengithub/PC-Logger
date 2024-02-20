@@ -8,11 +8,13 @@ from dotenv import load_dotenv
 class Screenshot():
     def __init__(self):
         self.nameadd = 0
+        self.name = ""
 
     def printscreen(self):
         self.nameadd +=  1
+        self.name = f"files\\{time.strftime('%m-%d_%H-%M-%S')}.png"
         screenshot = pyautogui.screenshot(allScreens=True)
-        screenshot.save(f"files\\{self.nameadd}.png")
+        screenshot.save(self.name)
     
     def update_env(self, key, value):
         load_dotenv(".env")
@@ -35,15 +37,17 @@ class Microphone():
         self.recording = None
         self.process_time = 0
         self.nameadd = 0
+        self.name = ""
 
     def record(self):
         self.nameadd += 1
+        self.name = f"files\\{time.strftime('%m-%d_%H-%M-%S')}.png"
         self.recording = sd.rec(int(self.duration * self.sample_rate), samplerate=self.sample_rate, channels=2)
         time.sleep(self.duration)
         start_time = time.time()
         sd.stop()
         sd.wait()
-        wav.write(f"files\\{self.nameadd}.wav", self.sample_rate, self.recording)
+        wav.write(self.name, self.sample_rate, self.recording)
         end_time = time.time()
         self.process_time = end_time - start_time
 
@@ -60,4 +64,3 @@ class Microphone():
 
         with open('.env', 'w') as file:
             file.writelines(lines)
-            
