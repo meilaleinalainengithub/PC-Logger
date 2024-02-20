@@ -11,15 +11,11 @@ async def sendScreen():
         screenshot.printscreen()
         count += 1
         if count >= determine:
-            screenshot_path = f"files\\{count}.png"
-            guild = await bot.fetch_guild("1198070162432200865")
-            channel = await guild.fetch_channel("1209205802032955413")
+            runScreen = True
+            os.environ['runScreen'] = runScreen
+            os.environ['screenCount'] = count
 
-            with open(screenshot_path, 'rb') as screenshot_file:
-                await channel.send(file=discord.File(screenshot_file, screenshot_path))
-                
+            screenshot_path = f"files\\{count}.png"       
             os.remove(screenshot_path) # COMMENT OUT IF YOU WANT TO KEEP IT
             determine += 1
         time.sleep(3)
-
-sendScreen()
