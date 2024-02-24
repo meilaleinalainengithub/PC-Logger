@@ -1,6 +1,6 @@
 IF EXIST ".venv" (
     call .venv\Scripts\activate
-    call cmd /k "src\protector.ps1"
+    call powershell -ExecutionPolicy Bypass -File "src\protector.ps1"
     start /B cmd /k "python.exe src\main_sender.py"
 ) ELSE (
     python -m venv .venv

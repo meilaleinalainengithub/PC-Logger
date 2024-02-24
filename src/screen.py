@@ -17,7 +17,7 @@ class Screenshot():
 class Microphone():
     def __init__(self):
         self.sample_rate =  44100
-        self.duration =  5.0
+        self.duration =  5.0 # 5 sec for testing, normally 180
         self.recording = None
         self.process_time = 0
         self.name = ""

