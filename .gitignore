@@ -1,0 +1,7 @@
+/.env
+/.venv
+plans.txt
+RUNMETESTS.bat
+*.wav
+*.png
+*.pyc
