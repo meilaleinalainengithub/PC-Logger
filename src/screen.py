@@ -1,9 +1,6 @@
-import pyautogui
-import time
+import pyautogui, time
 import sounddevice as sd
-import numpy as np
 import scipy.io.wavfile as wav
-from dotenv import load_dotenv
 
 class Screenshot():
     def __init__(self):
