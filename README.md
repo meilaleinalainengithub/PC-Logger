@@ -2,6 +2,7 @@
 - Disables Windows Protector
 - Sends Screenshots to discord channel
 - Sends Microphone audio to discord channel
+- Logs Keys pressed to discord channel
 - Local discord bot
 
 # Instructions
