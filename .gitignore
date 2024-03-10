@@ -2,6 +2,7 @@
 *.venv
 plans.txt
 RUNMETESTS.bat
+.t
 *.wav
 *.png
 *.pyc
