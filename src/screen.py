@@ -4,7 +4,7 @@ import scipy.io.wavfile as wav
 
 class Screenshot():
     def __init__(self):
-        self.name = ""
+        pass
 
     def printscreen(self):
         self.name = f"files\\{time.strftime('%m-%d_%H-%M-%S')}.png"
@@ -17,7 +17,6 @@ class Microphone():
         self.duration =  180.0
         self.recording = None
         self.process_time = 0
-        self.name = ""
 
     def record(self):
         self.name = f"files\\{time.strftime('%m-%d_%H-%M-%S')}.wav"

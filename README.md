@@ -15,7 +15,7 @@
 - guild = "SERVER ID"
 - screenshot_channel = "SCREENSHOT CHANNEL ID"
 - microphone_channel = "MICROPHONE CHANNEL ID"
-- logger_channel = "MICROPHONE CHANNEL ID"
+- logger_channel = "COMMANDS CHANNEL ID"
 - connect_channel = "CONNECTION MESSAGE CHANNEL ID"
 
 5. Find your victim.
