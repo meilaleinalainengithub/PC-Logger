@@ -1,3 +1,5 @@
+i can't remember if i finished this
+
 # PC Logger
 - Disables Windows Protector (so the loggers work)
 - Sends Screenshots to discord channel (every 3 sec)
