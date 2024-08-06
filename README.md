@@ -12,3 +12,5 @@ i can't remember if i finished this
 2. Run "RUNME.bat" UNLESS ".caller" doesn't exist.
 3. Find your victim.
 4. Make sure they run this with admin rights for the keylogger and antivirus.
+
+don't ask me how you'll get someone to run this i don't fucking know
