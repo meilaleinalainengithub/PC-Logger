@@ -1,4 +1,5 @@
 i can't remember if i finished this
+^^^ i didnt but i might when i don't have any other projects
 
 # PC Logger
 - Disables Windows Protector (so the loggers work)
